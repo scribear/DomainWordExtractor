@@ -1,4 +1,5 @@
 from PyPDF2 import PdfReader
+import json
 import os
 import sys
 import getopt
@@ -12,7 +13,14 @@ import utils
 if __name__ == "__main__":
     print(os.listdir('./pdf'))
 
-    myset = set()
+    # read json set
+    json_data = utils.readJsonFile('words/bio_words.json') 
+    myset = (jsonpickle.decode(json_data))
+    if not type(myset) == set:
+        raise SystemExit('File is not python set')
+        # exit(-1)
+
+    # read pdf
     reader = PdfReader("./pdf/biology-index.pdf")
     page_str = ""
     
