@@ -7,21 +7,32 @@ import jsonpickle
 
 import utils
 
-### Made assuming that PDF has an Index. Stores data into a JSON file.
+### Made assuming that PDF has an Index. Stores data into a JSON file - if JSON already exists, adds only new words to the JSON.
 
 # print(len(reader.pages)) # 19
 if __name__ == "__main__":
-    print(os.listdir('./pdf'))
+    #print(os.listdir('./pdf'))
+
+    #Fetch pdf path from CLI
+    print("Type the full file name of the PDF you are trying to read from (keep relevant PDFs in PDF folder):")
+    pdf_path = "./pdf/" + input() + ".pdf"
+
+    #Fetch json path from CLI
+    print("If there is already an existing JSON with relevant data input it here. \n Otherwise, write the name of the JSON file you would like to store the data in (keep relevant JSONs in words folder):")
+    json_path = "words/" + input() + ".json"
 
     # read json set
-    json_data = utils.readJsonFile('words/bio_words.json') 
-    myset = (jsonpickle.decode(json_data))
-    if not type(myset) == set:
-        raise SystemExit('File is not python set')
+    myset = set()
+
+    #checks for file and that file is not empty. Populates myset with relevant data
+    if os.path.exists(json_path) and os.path.getsize(json_path) > 0:
+        json_data = utils.readJsonFile(json_path)
+        myset = (jsonpickle.decode(json_data))
+        # raise SystemExit('File is not python set')
         # exit(-1)
 
     # read pdf
-    reader = PdfReader("./pdf/biology-index.pdf")
+    reader = PdfReader(pdf_path)
     page_str = ""
     
     for page in reader.pages:
@@ -43,4 +54,4 @@ if __name__ == "__main__":
                 word += line[idx]
 
     # utils.writeJsonFile('test.json', page_str)
-    utils.writeJsonFile('words/bio_words.json', jsonpickle.encode(myset))
+    utils.writeJsonFile(json_path, jsonpickle.encode(myset))
