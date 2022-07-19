@@ -15,42 +15,41 @@ if __name__ == "__main__":
     path = "./Class_Categories/"
     for class_type in os.listdir(path):
         subdirectory_path = os.path.join(path, class_type)
+        page_str = ""
+        myset = set()
+        json_path = "words/" + class_type + ".json"
+
+        #checks for file and that file is not empty. Populates myset with relevant data
+        if os.path.exists(json_path) and os.path.getsize(json_path) > 0:
+            json_data = utils.readJsonFile(json_path)
+            myset = (jsonpickle.decode(json_data))
+
         for pdf in os.listdir(subdirectory_path):
             pdf_path = os.path.join(subdirectory_path, pdf)
-            myset = set()
-            json_path = "words/" + class_type + ".json"
-
-            #checks for file and that file is not empty. Populates myset with relevant data
-            if os.path.exists(json_path) and os.path.getsize(json_path) > 0:
-                json_data = utils.readJsonFile(json_path)
-                myset = (jsonpickle.decode(json_data))
-                # raise SystemExit('File is not python set')
-                # exit(-1)
 
             # read pdf
             reader = PdfReader(pdf_path)
-            page_str = ""
             
             for page in reader.pages:
                 page_str += page.extract_text()
                 # print(page_str)
 
-            # page_str = str.lower(page_str) # all to lower case
-            lines = page_str.split('\n')
+        # page_str = str.lower(page_str) # all to lower case
+        lines = page_str.split('\n')
 
-            #Cleans list, stores phrases in myset
-            word = ''
-            for line in lines:
-                for idx in range(len(line)):
-                    if str.isdigit(line[idx]): # is a digit
-                        if (word != 'Index' and word != 'Symbols'):
-                            myset.add(word) # add the word/phrase
-                        word = '' # reset the word
-                    else: # not a digit
-                        word += line[idx]
+        #Cleans list, stores phrases in myset
+        word = ''
+        for line in lines:
+            for idx in range(len(line)):
+                if str.isdigit(line[idx]): # is a digit
+                    if (word != 'Index' and word != 'Symbols'):
+                        myset.add(word) # add the word/phrase
+                    word = '' # reset the word
+                else: # not a digit
+                    word += line[idx]
 
-            # utils.writeJsonFile('test.json', page_str)
-            utils.writeJsonFile(json_path, jsonpickle.encode(myset))
+        # utils.writeJsonFile('test.json', page_str)
+        utils.writeJsonFile(json_path, jsonpickle.encode(myset))
             
 
         # #Fetch pdf path from CLI
