@@ -4,6 +4,7 @@ import os
 import sys
 import getopt
 import jsonpickle
+import string
 
 import utils
 
@@ -11,8 +12,9 @@ import utils
 
 # print(len(reader.pages)) # 19
 if __name__ == "__main__":
-    #print(os.listdir('./pdf'))
     path = "./Class_Categories/"
+
+    #Iterates over subdirectories in Class_Categories
     for class_type in os.listdir(path):
         subdirectory_path = os.path.join(path, class_type)
         page_str = ""
@@ -32,7 +34,6 @@ if __name__ == "__main__":
             
             for page in reader.pages:
                 page_str += page.extract_text()
-                # print(page_str)
 
         # page_str = str.lower(page_str) # all to lower case
         lines = page_str.split('\n')
@@ -41,24 +42,13 @@ if __name__ == "__main__":
         word = ''
         for line in lines:
             for idx in range(len(line)):
-                if str.isdigit(line[idx]): # is a digit
-                    if (word != 'Index' and word != 'Symbols'):
+                if str.isalpha(line[idx]) or line[idx] == " " or line[idx] == "'": # is normal
+                    word += line[idx]
+                else: # not a digit
+                    if (word != 'Index' and word != 'Symbols' and len(word) > 2):
                         myset.add(word) # add the word/phrase
                     word = '' # reset the word
-                else: # not a digit
-                    word += line[idx]
 
         # utils.writeJsonFile('test.json', page_str)
         utils.writeJsonFile(json_path, jsonpickle.encode(myset))
             
-
-        # #Fetch pdf path from CLI
-        # print("Type the full file name of the PDF you are trying to read from (keep relevant PDFs in PDF folder):")
-        # pdf_path = "./pdf/" + input() + ".pdf"
-
-        # #Fetch json path from CLI
-        # print("If there is already an existing JSON with relevant data input it here. \n Otherwise, write the name of the JSON file you would like to store the data in (keep relevant JSONs in words folder):")
-        # json_path = "words/" + input() + ".json"
-
-        # # read json set
-        
