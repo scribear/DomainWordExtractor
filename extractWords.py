@@ -19,12 +19,13 @@ if __name__ == "__main__":
         subdirectory_path = os.path.join(path, class_type)
         page_str = ""
         myset = set()
-        json_path = "words/" + class_type + ".json"
+        json_path = "Phrases/" + class_type + ".json"
 
         #checks for file and that file is not empty. Populates myset with relevant data
         if os.path.exists(json_path) and os.path.getsize(json_path) > 0:
             json_data = utils.readJsonFile(json_path)
-            myset = (jsonpickle.decode(json_data))
+            myarray = (jsonpickle.decode(json_data))
+            myset = set(myarray)
 
         for pdf in os.listdir(subdirectory_path):
             pdf_path = os.path.join(subdirectory_path, pdf)
@@ -46,9 +47,8 @@ if __name__ == "__main__":
                     word += line[idx]
                 else: # not a digit
                     if (word != 'Index' and word != 'Symbols' and len(word) > 2):
-                        myset.add(word) # add the word/phrase
+                        myset.add(word.strip()) # add the word/phrase
                     word = '' # reset the word
 
         # utils.writeJsonFile('test.json', page_str)
-        utils.writeJsonFile(json_path, jsonpickle.encode(myset))
-            
+        utils.writeJsonFile(json_path, jsonpickle.encode(list(myset)))
